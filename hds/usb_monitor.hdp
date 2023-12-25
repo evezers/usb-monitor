@@ -1,0 +1,17 @@
+[QuestaSim]
+gw1n = C:/questasim64_2021.1/gw1n
+[hdl]
+usb_monitor_lib = D:/FPGA/usb_monitor/hdl
+[hds]
+usb_monitor_lib = $HDS_PROJECT_DIR/usb_monitor_lib/hds
+[hds_settings]
+default_library = usb_monitor_lib
+project_description = USB 7" monitor, targeted GOWIN FPGA.
+version = 3
+[library_files_inclusion]
+usb_monitor_lib = specify
+[library_type]
+gw1n = downstream_only
+usb_monitor_lib = regular
+[shared]
+others = $HDS_TEAM_HOME/shared.hdp
