@@ -1,5 +1,6 @@
 library ieee;
     use ieee.std_logic_1164.all;
+    use work.ulpi_pkg.all;
 
 entity fsm_ulpi is
     port (
@@ -7,26 +8,17 @@ entity fsm_ulpi is
         reset  : in    std_logic;
         enable : in    std_logic;
 
-        new_cmd  : in    std_logic;
-        i_data   : in    std_logic_vector(7 downto 0);
-        reg_data : in    std_logic_vector(7 downto 0);
+        i_request       : in    std_logic;
+        i_address       : in    std_logic_vector(7 downto 0);
+        i_register_data : in    std_logic_vector(7 downto 0);
+        o_register_data : out   std_logic_vector(7 downto 0);
 
-        dir    : in    std_logic;
-        nxt    : in    std_logic;
-        o_data : inout std_logic_vector(7 downto 0);
-        stp    : out   std_logic;
-
-        o_read_data : out   std_logic_vector(7 downto 0)
+        i_ulpi : in    t_from_ulpi;
+        o_ulpi : out   t_to_ulpi
     );
 end entity fsm_ulpi;
 
 architecture rtl of fsm_ulpi is
-
-    constant ULPI_CMD_IDLE : std_logic_vector(7 downto 0) := (others => '0');
-
-    constant ULPI_CMD_HEAD_TRANSMIT       : std_logic_vector(7 downto 6) := "01";
-    constant ULPI_CMD_HEAD_REGISTER_WRITE : std_logic_vector(7 downto 6) := "10";
-    constant ULPI_CMD_HEAD_REGISTER_READ  : std_logic_vector(7 downto 6) := "11";
 
     -- Build an enumerated type for the state machine
 
@@ -43,68 +35,61 @@ architecture rtl of fsm_ulpi is
     -- Register to hold the current state
     signal state : fsm_ulpi_state_type;
 
-    signal data_head_r : std_logic_vector(7 downto 6);
-    signal data_r      : std_logic_vector(7 downto 0);
-    signal o_data_r    : std_logic_vector(7 downto 0);
-    signal stp_r       : std_logic;
+    signal address_head_r : std_logic_vector(7 downto 6);
+    signal data_r         : std_logic_vector(7 downto 0);
+    signal o_data_r       : std_logic_vector(7 downto 0);
+    signal stp_r          : std_logic;
 
-    signal o_read_data_r : std_logic_vector(7 downto 0);
+    signal o_register_data_r : std_logic_vector(7 downto 0);
 
 begin
 
-    -- data_r <= i_data;
-
-    stp         <= stp_r;
-    data_head_r <= i_data(7 downto 6);
-    o_data      <= o_data_r when (enable = '0' and dir = '1') else
-                   (others => 'Z');
-    o_read_data <= o_read_data_r;
+    o_ulpi.stp      <= stp_r;
+    address_head_r  <= i_address(7 downto 6);
+    o_ulpi.data     <= o_data_r when (enable = '0' and i_ulpi.dir = '1') else
+                       (others => 'Z');
+    o_register_data <= o_register_data_r;
 
     process (enable, clk, reset) is
     begin
 
         if (enable = '0') then
-            o_data <= (others => 'Z');
         elsif (reset = '1') then
             state <= idle_state;
 
-            data_head_r <= (others => '0');
-            data_r      <= (others => '0');
-            o_data_r    <= (others => '0');
-            stp_r       <= '0';
+            address_head_r <= (others => '0');
+            data_r         <= (others => '0');
+            o_data_r       <= (others => '0');
+            stp_r          <= '0';
         elsif (rising_edge(clk)) then
 
             case state is
 
                 when idle_state =>
 
-                    if (new_cmd = '1') then
+                    if (i_request = '1') then
                         state <= wait_dir_state;
                     else
                         state <= state;
                     end if;
 
-                when wait_dir_state =>                                               -- if IDLE will hang here
+                when wait_dir_state =>
 
-                    if (dir = '0') then
-                        if (data_head_r = ULPI_CMD_HEAD_REGISTER_WRITE) then
+                    if (i_ulpi.dir = '0') then
+                        if (address_head_r = ULPI_CMD_HEAD_REGISTER_WRITE) then
                             state <= cmd_write_state;
-                        elsif (data_head_r = ULPI_CMD_HEAD_REGISTER_READ) then
+                        elsif (address_head_r = ULPI_CMD_HEAD_REGISTER_READ) then
                             state <= cmd_read_state;
                         else
                             state <= state;
                         end if;
                     else
-                        if (data_head_r = ULPI_CMD_HEAD_TRANSMIT) then
-                            state <= state;                                          -- TRANSMIT
-                        else
-                            state <= state;
-                        end if;
+                        state <= state;
                     end if;
 
                 when cmd_write_state =>
 
-                    if (nxt = '1') then
+                    if (i_ulpi.nxt = '1') then
                         state <= write_reg_state;
                     else
                         state <= state;
@@ -120,7 +105,7 @@ begin
 
                 when cmd_read_state =>
 
-                    if (nxt = '1') then
+                    if (i_ulpi.nxt = '1') then
                         state <= read_reg_state;
                     else
                         state <= state;
@@ -130,17 +115,12 @@ begin
 
                     state <= idle_state;
 
-            -- when others =>
-            --     state <= IDLE;
-
             end case;
 
         end if;
 
     end process;
 
-    -- Determine the output based only on the current state
-    -- and the input (do not wait for a clock edge).
     process (state) is
     begin
 
@@ -155,11 +135,11 @@ begin
 
             when cmd_write_state =>
 
-                o_data_r <= i_data;
+                o_data_r <= i_address;
 
             when write_reg_state =>
 
-                o_data_r <= reg_data;
+                o_data_r <= i_register_data;
 
             when stp_state =>
 
@@ -167,22 +147,14 @@ begin
 
             when cmd_read_state =>
 
-                o_data_r <= i_data;
+                o_data_r <= i_address;
 
             when read_reg_state =>
 
-                o_read_data_r <= o_data;
+                o_register_data_r <= i_ulpi.data;
 
         end case;
 
     end process;
-
--- Move to the next state
--- process(clk)
--- begin
---     if (rising_edge(clock)) then
---         present_state <= next_state;
---     end if;
--- end process;
 
 end architecture rtl;
