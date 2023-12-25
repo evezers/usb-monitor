@@ -12,6 +12,7 @@ entity fsm_ulpi is
         i_address       : in    std_logic_vector(7 downto 0);
         i_register_data : in    std_logic_vector(7 downto 0);
         o_register_data : out   std_logic_vector(7 downto 0);
+        o_busy          : out   std_logic;
 
         i_ulpi : in    t_from_ulpi;
         o_ulpi : out   t_to_ulpi
@@ -39,16 +40,18 @@ architecture rtl of fsm_ulpi is
     signal data_r         : std_logic_vector(7 downto 0);
     signal o_data_r       : std_logic_vector(7 downto 0);
     signal stp_r          : std_logic;
+    signal busy_r         : std_logic;
 
     signal o_register_data_r : std_logic_vector(7 downto 0);
 
 begin
 
-    o_ulpi.stp      <= stp_r;
     address_head_r  <= i_address(7 downto 6);
+    o_ulpi.stp      <= stp_r;
+    o_register_data <= o_register_data_r;
+    o_busy          <= busy_r;
     o_ulpi.data     <= o_data_r when (enable = '0' and i_ulpi.dir = '1') else
                        (others => 'Z');
-    o_register_data <= o_register_data_r;
 
     process (enable, clk, reset) is
     begin
@@ -60,6 +63,7 @@ begin
             data_r         <= (others => '0');
             o_data_r       <= (others => '0');
             stp_r          <= '0';
+            busy_r         <= '0';
         elsif (rising_edge(clk)) then
 
             case state is
@@ -129,8 +133,11 @@ begin
 
                 o_data_r <= ULPI_CMD_IDLE;
                 stp_r    <= '0';
+                busy_r   <= '0';
 
             when wait_dir_state =>
+
+                busy_r <= '1';
 
             when cmd_write_state =>
 
