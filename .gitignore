@@ -1,0 +1,5 @@
+.hdl_checker
+_hdl_checker
+covhtmlreport
+vunit_out
+.env

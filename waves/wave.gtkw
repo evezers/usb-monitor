@@ -1,0 +1,42 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Mon Dec 04 20:32:52 2023
+[*]
+[dumpfile] "D:\FPGA\usb_monitor\vunit_out\test_output\lib.tb_ulpi_registers.test_pass_12cdb67a1edd1d5515b16ecde8e2ea253c30e4f3\ghdl\wave.ghw"
+[dumpfile_mtime] "Mon Dec 04 20:30:52 2023"
+[dumpfile_size] 3785
+[savefile] "d:\FPGA\usb_monitor\waves\wave.gtkw"
+[timestart] 0
+[size] 1920 989
+[pos] -1 -1
+*-26.664490 83400000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_ulpi_registers.
+[treeopen] top.tb_ulpi_registers.ulpi_link_inst.
+[sst_width] 303
+[signals_width] 310
+[sst_expanded] 1
+[sst_vpaned_height] 291
+@28
+top.tb_ulpi_registers.clk_r
+@c00023
+#{top.tb_ulpi_registers.data_r[7:0]} top.tb_ulpi_registers.data_r[7] top.tb_ulpi_registers.data_r[6] top.tb_ulpi_registers.data_r[5] top.tb_ulpi_registers.data_r[4] top.tb_ulpi_registers.data_r[3] top.tb_ulpi_registers.data_r[2] top.tb_ulpi_registers.data_r[1] top.tb_ulpi_registers.data_r[0]
+@28
+top.tb_ulpi_registers.data_r[7]
+top.tb_ulpi_registers.data_r[6]
+top.tb_ulpi_registers.data_r[5]
+top.tb_ulpi_registers.data_r[4]
+top.tb_ulpi_registers.data_r[3]
+top.tb_ulpi_registers.data_r[2]
+top.tb_ulpi_registers.data_r[1]
+top.tb_ulpi_registers.data_r[0]
+@1401203
+-group_end
+@28
+top.tb_ulpi_registers.dir_r
+top.tb_ulpi_registers.reset_r
+@22
+#{top.tb_ulpi_registers.ulpi_link_inst.ulpi_register_address_r[5:0]} top.tb_ulpi_registers.ulpi_link_inst.ulpi_register_address_r[5] top.tb_ulpi_registers.ulpi_link_inst.ulpi_register_address_r[4] top.tb_ulpi_registers.ulpi_link_inst.ulpi_register_address_r[3] top.tb_ulpi_registers.ulpi_link_inst.ulpi_register_address_r[2] top.tb_ulpi_registers.ulpi_link_inst.ulpi_register_address_r[1] top.tb_ulpi_registers.ulpi_link_inst.ulpi_register_address_r[0]
+#{top.tb_ulpi_registers.ulpi_link_inst.ulpi_pid_r[3:0]} top.tb_ulpi_registers.ulpi_link_inst.ulpi_pid_r[3] top.tb_ulpi_registers.ulpi_link_inst.ulpi_pid_r[2] top.tb_ulpi_registers.ulpi_link_inst.ulpi_pid_r[1] top.tb_ulpi_registers.ulpi_link_inst.ulpi_pid_r[0]
+[pattern_trace] 1
+[pattern_trace] 0

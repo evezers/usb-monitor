@@ -1,0 +1,35 @@
+rule:
+  global:
+    indentSize: 4
+  constant_004:
+    case: upper
+  process_016:
+    disable: True
+  process_018:
+    disable: True
+  instantiation_034:
+     method: 'entity'
+  # group:
+  #   blank_line:
+  #     style: no_blank_line
+  #     # disable: True
+  # architecture_003:
+  #   style: require_blank_line
+  # entity_003:
+  #   style: require_blank_line
+  # entity_203:
+  #   style: require_blank_line
+  # process_015:
+  #   style: require_blank_line
+  # procedure_200:
+  #   style: require_blank_line
+  # instantiation_004:
+  #   style: require_blank_line
+  # instantiation_019:
+  #   style: require_blank_line
+  # component_018:
+  #   style: require_blank_line
+  # library_003:
+  #   style: no_blank_line_unless_different_library  
+  # library_007:
+  #   style: no_blank_line_unless_different_library
