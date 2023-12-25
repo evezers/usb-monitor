@@ -149,7 +149,7 @@ begin
 
             when stp_state =>
 
-                stp_r <= '0';
+                stp_r <= '1';
 
             when cmd_read_state =>
 
