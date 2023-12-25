@@ -53,8 +53,7 @@ begin
     process (enable, clk, reset) is
     begin
 
-        if (enable = '0') then
-        elsif (reset = '1') then
+        if (reset = '1') then
             state <= idle_state;
 
             address_head_r <= (others => '0');
