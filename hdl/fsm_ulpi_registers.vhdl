@@ -2,24 +2,24 @@ library ieee;
     use ieee.std_logic_1164.all;
     use work.ulpi_pkg.all;
 
-entity fsm_ulpi is
+entity fsm_ulpi_registers is
     port (
         clk    : in    std_logic;
         reset  : in    std_logic;
         enable : in    std_logic;
 
-        i_request       : in    std_logic;
-        i_address       : in    std_logic_vector(7 downto 0);
-        i_register_data : in    std_logic_vector(7 downto 0);
-        o_register_data : out   std_logic_vector(7 downto 0);
-        o_busy          : out   std_logic;
+        i_register_request : in    std_logic;
+        i_register_address : in    std_logic_vector(7 downto 0);
+        i_register_data    : in    std_logic_vector(7 downto 0);
+        o_register_data    : out   std_logic_vector(7 downto 0);
+        o_register_busy    : out   std_logic;
 
         i_ulpi : in    t_from_ulpi;
         o_ulpi : out   t_to_ulpi
     );
-end entity fsm_ulpi;
+end entity fsm_ulpi_registers;
 
-architecture rtl of fsm_ulpi is
+architecture rtl of fsm_ulpi_registers is
 
     -- Build an enumerated type for the state machine
 
@@ -46,10 +46,10 @@ architecture rtl of fsm_ulpi is
 
 begin
 
-    address_head_r  <= i_address(7 downto 6);
+    address_head_r  <= i_register_address(7 downto 6);
     o_ulpi.stp      <= stp_r;
     o_register_data <= o_register_data_r;
-    o_busy          <= busy_r;
+    o_register_busy <= busy_r;
     o_ulpi.data     <= o_data_r when (enable = '0' and i_ulpi.dir = '1') else
                        (others => 'Z');
 
@@ -70,7 +70,7 @@ begin
 
                 when idle_state =>
 
-                    if (i_request = '1') then
+                    if (i_register_request = '1') then
                         state <= wait_dir_state;
                     else
                         state <= state;
@@ -141,7 +141,7 @@ begin
 
             when cmd_write_state =>
 
-                o_data_r <= i_address;
+                o_data_r <= i_register_address;
 
             when write_reg_state =>
 
@@ -153,7 +153,7 @@ begin
 
             when cmd_read_state =>
 
-                o_data_r <= i_address;
+                o_data_r <= i_register_address;
 
             when read_reg_state =>
 
