@@ -1,0 +1,46 @@
+[*]
+[*] GTKWave Analyzer v3.3.117 (w)1999-2023 BSI
+[*] Sun Jan  7 23:51:13 2024
+[*]
+[dumpfile] "/run/media/evezers/DATA/FPGA/usb_monitor/vunit_out/test_output/lib.tb_ulpi_registers1.test_pass_b83eb303370a7e73c3c3b0098fb056aed7518de5/ghdl/wave.ghw"
+[dumpfile_mtime] "Sun Jan  7 23:51:07 2024"
+[dumpfile_size] 1748
+[savefile] "/run/media/evezers/DATA/FPGA/usb_monitor/waves/lib.tb_ulpi_registers1.test_pass.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*0.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 303
+[signals_width] 190
+[sst_expanded] 1
+[sst_vpaned_height] 155
+@28
+top.check_pkg.check_enabled
+@22
+#{top.run_pkg.runner[0:20]} top.run_pkg.runner[0] top.run_pkg.runner[1] top.run_pkg.runner[2] top.run_pkg.runner[3] top.run_pkg.runner[4] top.run_pkg.runner[5] top.run_pkg.runner[6] top.run_pkg.runner[7] top.run_pkg.runner[8] top.run_pkg.runner[9] top.run_pkg.runner[10] top.run_pkg.runner[11] top.run_pkg.runner[12] top.run_pkg.runner[13] top.run_pkg.runner[14] top.run_pkg.runner[15] top.run_pkg.runner[16] top.run_pkg.runner[17] top.run_pkg.runner[18] top.run_pkg.runner[19] top.run_pkg.runner[20]
+@28
+top.tb_ulpi_registers1.add_test_data
+top.tb_ulpi_registers1.clk
+top.tb_ulpi_registers1.clk_r
+@22
+#{top.tb_ulpi_registers1.data_r[7:0]} top.tb_ulpi_registers1.data_r[7] top.tb_ulpi_registers1.data_r[6] top.tb_ulpi_registers1.data_r[5] top.tb_ulpi_registers1.data_r[4] top.tb_ulpi_registers1.data_r[3] top.tb_ulpi_registers1.data_r[2] top.tb_ulpi_registers1.data_r[1] top.tb_ulpi_registers1.data_r[0]
+@28
+top.tb_ulpi_registers1.dir
+top.tb_ulpi_registers1.dir_r
+top.tb_ulpi_registers1.enable
+@22
+#{top.tb_ulpi_registers1.i_data[7:0]} top.tb_ulpi_registers1.i_data[7] top.tb_ulpi_registers1.i_data[6] top.tb_ulpi_registers1.i_data[5] top.tb_ulpi_registers1.i_data[4] top.tb_ulpi_registers1.i_data[3] top.tb_ulpi_registers1.i_data[2] top.tb_ulpi_registers1.i_data[1] top.tb_ulpi_registers1.i_data[0]
+@28
+top.tb_ulpi_registers1.new_cmd
+top.tb_ulpi_registers1.nxt
+@22
+#{top.tb_ulpi_registers1.o_data[7:0]} top.tb_ulpi_registers1.o_data[7] top.tb_ulpi_registers1.o_data[6] top.tb_ulpi_registers1.o_data[5] top.tb_ulpi_registers1.o_data[4] top.tb_ulpi_registers1.o_data[3] top.tb_ulpi_registers1.o_data[2] top.tb_ulpi_registers1.o_data[1] top.tb_ulpi_registers1.o_data[0]
+#{top.tb_ulpi_registers1.o_read_data[7:0]} top.tb_ulpi_registers1.o_read_data[7] top.tb_ulpi_registers1.o_read_data[6] top.tb_ulpi_registers1.o_read_data[5] top.tb_ulpi_registers1.o_read_data[4] top.tb_ulpi_registers1.o_read_data[3] top.tb_ulpi_registers1.o_read_data[2] top.tb_ulpi_registers1.o_read_data[1] top.tb_ulpi_registers1.o_read_data[0]
+#{top.tb_ulpi_registers1.reg_data[7:0]} top.tb_ulpi_registers1.reg_data[7] top.tb_ulpi_registers1.reg_data[6] top.tb_ulpi_registers1.reg_data[5] top.tb_ulpi_registers1.reg_data[4] top.tb_ulpi_registers1.reg_data[3] top.tb_ulpi_registers1.reg_data[2] top.tb_ulpi_registers1.reg_data[1] top.tb_ulpi_registers1.reg_data[0]
+@28
+top.tb_ulpi_registers1.reset
+top.tb_ulpi_registers1.reset_r
+top.tb_ulpi_registers1.rst
+top.tb_ulpi_registers1.stp
+[pattern_trace] 1
+[pattern_trace] 0

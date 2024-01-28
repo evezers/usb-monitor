@@ -33,7 +33,7 @@ architecture rtl of fsm_ulpi_transmit is
     );
 
     -- Register to hold the current state
-    signal state : fsm_ulpi_state_type;
+    signal fsm_ulpi_transmit_state : fsm_ulpi_state_type;
 
     signal address_head_r : std_logic_vector(7 downto 6);
     signal data_r         : std_logic_vector(7 downto 0);
@@ -55,7 +55,7 @@ begin
     begin
 
         if (reset = '1') then
-            state <= idle_state;
+            fsm_ulpi_transmit_state <= idle_state;
 
             address_head_r <= (others => '0');
             data_r         <= (others => '0');
@@ -64,43 +64,43 @@ begin
             busy_r         <= '0';
         elsif (rising_edge(clk)) then
 
-            case state is
+            case fsm_ulpi_transmit_state is
 
                 when idle_state =>
 
                     if (i_transmit_request = '1') then
-                        state <= wait_dir_state;
+                        fsm_ulpi_transmit_state <= wait_dir_state;
                     else
-                        state <= state;
+                        fsm_ulpi_transmit_state <= idle_state;
                     end if;
 
                 when wait_dir_state =>
 
                     if (i_ulpi.dir = '0') then
-                        state <= cmd_write_state;
+                        fsm_ulpi_transmit_state <= cmd_write_state;
                     else
-                        state <= state;
+                        fsm_ulpi_transmit_state <= wait_dir_state;
                     end if;
 
                 when cmd_write_state =>
 
                     if (i_ulpi.nxt = '1') then
-                        state <= write_reg_state;
+                        fsm_ulpi_transmit_state <= write_reg_state;
                     else
-                        state <= state;
+                        fsm_ulpi_transmit_state <= cmd_write_state;
                     end if;
 
                 when write_reg_state =>
 
                     if (i_ulpi.nxt = '1' and i_transmit_end = '1') then
-                        state <= stp_state;
+                        fsm_ulpi_transmit_state <= stp_state;
                     else
-                        state <= state;
+                        fsm_ulpi_transmit_state <= write_reg_state;
                     end if;
 
                 when stp_state =>
 
-                    state <= idle_state;
+                    fsm_ulpi_transmit_state <= idle_state;
 
             end case;
 
@@ -108,10 +108,10 @@ begin
 
     end process;
 
-    process (state) is
+    process (fsm_ulpi_transmit_state) is
     begin
 
-        case state is
+        case fsm_ulpi_transmit_state is
 
             when idle_state =>
 

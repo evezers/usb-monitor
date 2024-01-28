@@ -3,3 +3,13 @@ _hdl_checker
 covhtmlreport
 vunit_out
 .env
+
+# pyinstaller
+build
+dist
+run.spec
+
+# nuitka
+run.build
+run.dist
+run.onefile-build

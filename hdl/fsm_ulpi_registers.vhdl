@@ -34,7 +34,7 @@ architecture rtl of fsm_ulpi_registers is
     );
 
     -- Register to hold the current state
-    signal state : fsm_ulpi_state_type;
+    signal fsm_ulpi_registers_state : fsm_ulpi_state_type;
 
     signal address_head_r : std_logic_vector(7 downto 6);
     signal data_r         : std_logic_vector(7 downto 0);
@@ -57,7 +57,7 @@ begin
     begin
 
         if (reset = '1') then
-            state <= idle_state;
+            fsm_ulpi_registers_state <= idle_state;
 
             address_head_r <= (others => '0');
             data_r         <= (others => '0');
@@ -66,57 +66,57 @@ begin
             busy_r         <= '0';
         elsif (rising_edge(clk)) then
 
-            case state is
+            case fsm_ulpi_registers_state is
 
                 when idle_state =>
 
                     if (i_register_request = '1') then
-                        state <= wait_dir_state;
+                        fsm_ulpi_registers_state <= wait_dir_state;
                     else
-                        state <= state;
+                        fsm_ulpi_registers_state <= idle_state;
                     end if;
 
                 when wait_dir_state =>
 
                     if (i_ulpi.dir = '0') then
                         if (address_head_r = ULPI_CMD_HEAD_REGISTER_WRITE) then
-                            state <= cmd_write_state;
+                            fsm_ulpi_registers_state <= cmd_write_state;
                         elsif (address_head_r = ULPI_CMD_HEAD_REGISTER_READ) then
-                            state <= cmd_read_state;
+                            fsm_ulpi_registers_state <= cmd_read_state;
                         else
-                            state <= state;
+                            fsm_ulpi_registers_state <= wait_dir_state;
                         end if;
                     else
-                        state <= state;
+                        fsm_ulpi_registers_state <= wait_dir_state;
                     end if;
 
                 when cmd_write_state =>
 
                     if (i_ulpi.nxt = '1') then
-                        state <= write_reg_state;
+                        fsm_ulpi_registers_state <= write_reg_state;
                     else
-                        state <= state;
+                        fsm_ulpi_registers_state <= cmd_write_state;
                     end if;
 
                 when write_reg_state =>
 
-                    state <= stp_state;
+                    fsm_ulpi_registers_state <= stp_state;
 
                 when stp_state =>
 
-                    state <= idle_state;
+                    fsm_ulpi_registers_state <= idle_state;
 
                 when cmd_read_state =>
 
                     if (i_ulpi.nxt = '1') then
-                        state <= read_reg_state;
+                        fsm_ulpi_registers_state <= read_reg_state;
                     else
-                        state <= state;
+                        fsm_ulpi_registers_state <= cmd_read_state;
                     end if;
 
                 when read_reg_state =>
 
-                    state <= idle_state;
+                    fsm_ulpi_registers_state <= idle_state;
 
             end case;
 
@@ -124,10 +124,10 @@ begin
 
     end process;
 
-    process (state) is
+    process (fsm_ulpi_registers_state) is
     begin
 
-        case state is
+        case fsm_ulpi_registers_state is
 
             when idle_state =>
 

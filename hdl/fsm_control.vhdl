@@ -50,7 +50,7 @@ architecture rtl of fsm_control is
         usb_disconnect
     );
 
-    signal state : fsm_control_state_type;
+    signal fsm_control_state : fsm_control_state_type;
 
 begin
 
@@ -67,7 +67,7 @@ begin
         if (enable = '0') then
         -- o_data <= (others => 'Z');
         elsif (reset = '1') then
-            state <= ulpi_config_state;
+            fsm_control_state <= ulpi_config_state;
 
             r_register_data             <= (others => '0');
             r_register_address          <= (others => '0');
@@ -77,46 +77,46 @@ begin
             r_transmit_end              <= '0';
         elsif (rising_edge(clk)) then
 
-            case state is
+            case fsm_control_state is
 
                 when ulpi_config_state =>
 
                     if (i_register_busy = '0') then
-                        state <= usb_connect_state;
+                        fsm_control_state <= usb_connect_state;
                     else
-                        state <= state;
+                        fsm_control_state <= ulpi_config_state;
                     end if;
 
                 when usb_connect_state =>
 
                     if (ulpi_config_finished = '1') then
-                        state <= usb_config_state;
+                        fsm_control_state <= usb_config_state;
                     else
-                        state <= state;
+                        fsm_control_state <= usb_connect_state;
                     end if;
 
                 when usb_config_state =>
 
                     if (ulpi_config_finished = '1') then
-                        state <= usb_idle_state;
+                        fsm_control_state <= usb_idle_state;
                     else
-                        state <= state;
+                        fsm_control_state <= usb_config_state;
                     end if;
 
                 when usb_idle_state =>
 
                     if (ulpi_config_finished = '1') then
-                        state <= usb_disconnect;
+                        fsm_control_state <= usb_disconnect;
                     else
-                        state <= state;
+                        fsm_control_state <= usb_idle_state;
                     end if;
 
                 when usb_disconnect =>
 
                     if (ulpi_config_finished = '1') then
-                        state <= usb_connect_state;
+                        fsm_control_state <= usb_connect_state;
                     else
-                        state <= state;
+                        fsm_control_state <= usb_disconnect;
                     end if;
 
             end case;
@@ -125,10 +125,10 @@ begin
 
     end process;
 
-    process (state) is
+    process (fsm_control_state) is
     begin
 
-        case state is
+        case fsm_control_state is
 
             when ulpi_config_state =>
 

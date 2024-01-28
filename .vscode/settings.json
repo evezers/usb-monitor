@@ -1,0 +1,5 @@
+{
+    "coverage-gutters.coverageBaseDir": "vunit_out/**",
+    "coverage-gutters.coverageReportFileName": "vunit_out/coverage_html/index.html",
+    "coverage-gutters.showLineCoverage": true,
+}

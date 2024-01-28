@@ -141,9 +141,9 @@ begin
                 WaitForClock(clk_r, 10);
 
                 report "This will pass";
-            -- elsif run("test_fail") then
-            --     assert true
-            --         report "It fails";
+            elsif run("test_fail") then
+                assert true
+                    report "It fails";
             end if;
 
         end loop;
