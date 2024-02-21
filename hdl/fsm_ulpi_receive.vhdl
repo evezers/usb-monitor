@@ -12,8 +12,8 @@ entity fsm_ulpi_receive is
         o_receive_busy : out   std_logic;
         o_receive_hold : out   std_logic;
 
-        i_ulpi : in    t_from_ulpi;
-        o_ulpi : out   t_to_ulpi
+        i_ulpi : in    t_from_ulpi
+        -- o_ulpi : out   t_to_ulpi
     );
 end entity fsm_ulpi_receive;
 
@@ -24,58 +24,77 @@ architecture rtl of fsm_ulpi_receive is
     type fsm_ulpi_state_type is (
         idle_state,
         wait_dir_state,
-        cmd_read_state,
+        -- cmd_read_state,
         read_reg_state
     );
 
     -- Register to hold the current state
     signal fsm_ulpi_receive_state : fsm_ulpi_state_type;
 
-    signal r_busy : std_logic;
+    signal r_busy   : std_logic;
+    -- signal r_active : std_logic;
 
-    signal r_register_data : std_logic_vector(7 downto 0);
+-- signal r_register_data : std_logic_vector(7 downto 0);
 
 begin
 
-    o_receive_data <= r_register_data;
+    -- r_active <= (i_ulpi.dir and i_ulpi.nxt) or ('1' and );
+
+    o_receive_data <= i_ulpi.data;
     o_receive_busy <= r_busy;
     o_receive_hold <= i_ulpi.nxt;
+
+    -- o_ulpi.data <= (others => 'Z');
+    -- o_ulpi.stp <= 'Z';
 
     process (enable, clk, reset) is
     begin
 
         if (reset = '1') then
             fsm_ulpi_receive_state <= idle_state;
-
-            r_register_data <= (others => '0');
-            r_busy          <= '0';
         elsif (rising_edge(clk)) then
 
             case fsm_ulpi_receive_state is
 
                 when idle_state =>
+                -- report "cmd_read_state: nxt: " & to_string(i_ulpi.nxt) & " dir: " & to_string(i_ulpi.dir);
+
 
                     fsm_ulpi_receive_state <= wait_dir_state;
 
                 when wait_dir_state =>
 
                     if (i_ulpi.dir = '1') then
-                        fsm_ulpi_receive_state <= cmd_read_state;
+                        -- fsm_ulpi_receive_state <= cmd_read_state;
+                        if (i_ulpi.nxt = '1') then
+                            fsm_ulpi_receive_state <= read_reg_state;
+                        elsif (i_ulpi.data(5 downto 4) = "01") then
+                            fsm_ulpi_receive_state <= read_reg_state;
+                        else
+                            fsm_ulpi_receive_state <= idle_state;
+                        end if;
                     else
                         fsm_ulpi_receive_state <= wait_dir_state;
                     end if;
 
-                when cmd_read_state =>
+                -- when cmd_read_state =>
+                -- -- report "cmd_read_state: nxt: " & to_string(i_ulpi.nxt) & " dir: " & to_string(i_ulpi.dir);
+
+                --     if (i_ulpi.nxt = '1') then
+                --         fsm_ulpi_receive_state <= read_reg_state;
+                --     elsif (i_ulpi.data(5 downto 4) = "01") then
+                --         fsm_ulpi_receive_state <= read_reg_state;
+                --     else
+                --         fsm_ulpi_receive_state <= idle_state;
+                --     end if;
+
+                when read_reg_state =>
 
                     if (i_ulpi.dir = '1') then
                         fsm_ulpi_receive_state <= read_reg_state;
                     else
-                        fsm_ulpi_receive_state <= cmd_read_state;
+                        fsm_ulpi_receive_state <= idle_state;
                     end if;
-
-                when read_reg_state =>
-
-                    fsm_ulpi_receive_state <= idle_state;
 
             end case;
 
@@ -90,17 +109,22 @@ begin
 
             when idle_state =>
 
+                -- r_register_data <= i_ulpi.data;
                 r_busy <= '0';
 
             when wait_dir_state =>
 
-            when cmd_read_state =>
+                r_busy <= '0';
 
-                r_busy <= '1';
+            -- when cmd_read_state =>
+
+            --     r_busy <= '0';
 
             when read_reg_state =>
 
-                r_register_data <= i_ulpi.data;
+                r_busy <= '1';
+
+        -- r_register_data <= i_ulpi.data;
 
         end case;
 

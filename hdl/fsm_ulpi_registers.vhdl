@@ -37,20 +37,20 @@ architecture rtl of fsm_ulpi_registers is
     signal fsm_ulpi_registers_state : fsm_ulpi_state_type;
 
     signal address_head_r : std_logic_vector(7 downto 6);
-    signal data_r         : std_logic_vector(7 downto 0);
-    signal o_data_r       : std_logic_vector(7 downto 0);
-    signal stp_r          : std_logic;
-    signal busy_r         : std_logic;
+    -- signal data_r         : std_logic_vector(7 downto 0);
+    signal o_data_r : std_logic_vector(7 downto 0);
+    signal stp_r    : std_logic;
+    signal busy_r   : std_logic;
 
     signal o_register_data_r : std_logic_vector(7 downto 0);
 
 begin
 
     address_head_r  <= i_register_address(7 downto 6);
-    o_ulpi.stp      <= stp_r;
+    o_ulpi.stp      <= stp_r when (enable = '1' ) else 'Z';
     o_register_data <= o_register_data_r;
     o_register_busy <= busy_r;
-    o_ulpi.data     <= o_data_r when (enable = '0' and i_ulpi.dir = '1') else
+    o_ulpi.data     <= o_data_r when (enable = '1' and i_ulpi.dir = '0') else
                        (others => 'Z');
 
     process (enable, clk, reset) is
@@ -59,11 +59,11 @@ begin
         if (reset = '1') then
             fsm_ulpi_registers_state <= idle_state;
 
-            address_head_r <= (others => '0');
-            data_r         <= (others => '0');
-            o_data_r       <= (others => '0');
-            stp_r          <= '0';
-            busy_r         <= '0';
+--            address_head_r <= (others => '0');
+        -- data_r         <= (others => '0');
+        -- o_data_r       <= (others => '0');
+        -- stp_r          <= '0';
+        -- busy_r         <= '0';
         elsif (rising_edge(clk)) then
 
             case fsm_ulpi_registers_state is
@@ -124,8 +124,19 @@ begin
 
     end process;
 
-    process (fsm_ulpi_registers_state) is
+    process (clk, reset) is
     begin
+        if (reset = '1') then
+            -- fsm_ulpi_registers_state <= idle_state;
+
+--            address_head_r <= (others => '0');
+        -- data_r         <= (others => '0');
+        o_data_r       <= (others => '0');
+        stp_r          <= '0';
+        busy_r         <= '0';
+
+        o_register_data_r <= (others => '0');
+        elsif (rising_edge(clk)) then
 
         case fsm_ulpi_registers_state is
 
@@ -133,34 +144,55 @@ begin
 
                 o_data_r <= ULPI_CMD_IDLE;
                 stp_r    <= '0';
-                busy_r   <= '0';
+
+                if (i_register_request = '1') then
+                    busy_r   <= '1';
+                else
+                    busy_r   <= '0';
+                end if;
 
             when wait_dir_state =>
+
+                o_data_r <= ULPI_CMD_IDLE;
+                stp_r    <= '0';
 
                 busy_r <= '1';
 
             when cmd_write_state =>
 
+                stp_r <= '0';
+
+                busy_r   <= '1';
                 o_data_r <= i_register_address;
 
             when write_reg_state =>
 
+                stp_r <= '0';
+
+                busy_r   <= '1';
                 o_data_r <= i_register_data;
 
             when stp_state =>
 
-                stp_r <= '1';
+                o_data_r <= i_register_data;
+
+                busy_r <= '1';
+                stp_r  <= '1';
 
             when cmd_read_state =>
 
+                busy_r   <= '1';
+                stp_r    <= '1';
                 o_data_r <= i_register_address;
 
             when read_reg_state =>
 
+                busy_r            <= '1';
+                stp_r             <= '1';
                 o_register_data_r <= i_ulpi.data;
 
         end case;
-
+    end if;
     end process;
 
 end architecture rtl;

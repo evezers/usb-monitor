@@ -55,6 +55,8 @@ lib.add_source_files("hdl/*.vhdl")
 for tb in lib.get_test_benches():
     tb.set_sim_option("modelsim.init_file.gui", "waves/" + tb.name +"_wave.do")
 
+lib.set_sim_option("modelsim.vsim_flags.gui", ["-wlfnocollapse"])
+
 if os.environ.get("ENABLE_COVERAGE") == "true":
     lib.set_sim_option("enable_coverage", True)
 

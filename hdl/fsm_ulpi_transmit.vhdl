@@ -35,20 +35,20 @@ architecture rtl of fsm_ulpi_transmit is
     -- Register to hold the current state
     signal fsm_ulpi_transmit_state : fsm_ulpi_state_type;
 
-    signal address_head_r : std_logic_vector(7 downto 6);
-    signal data_r         : std_logic_vector(7 downto 0);
-    signal o_data_r       : std_logic_vector(7 downto 0);
-    signal stp_r          : std_logic;
-    signal busy_r         : std_logic;
+    -- signal address_head_r : std_logic_vector(7 downto 6);
+    -- signal data_r         : std_logic_vector(7 downto 0);
+    signal o_data_r : std_logic_vector(7 downto 0);
+    signal stp_r    : std_logic;
+    signal busy_r   : std_logic;
 
-    signal o_register_data_r : std_logic_vector(7 downto 0);
+-- signal o_register_data_r : std_logic_vector(7 downto 0);
 
 begin
 
     o_transmit_hold <= i_ulpi.nxt;
-    o_ulpi.stp      <= stp_r;
+    o_ulpi.stp      <= stp_r when (enable = '1' ) else 'Z';
     o_transmit_busy <= busy_r;
-    o_ulpi.data     <= o_data_r when (enable = '0' and i_ulpi.dir = '1') else
+    o_ulpi.data     <= o_data_r when (enable = '1' and i_ulpi.dir = '0') else
                        (others => 'Z');
 
     process (enable, clk, reset) is
@@ -57,11 +57,11 @@ begin
         if (reset = '1') then
             fsm_ulpi_transmit_state <= idle_state;
 
-            address_head_r <= (others => '0');
-            data_r         <= (others => '0');
-            o_data_r       <= (others => '0');
-            stp_r          <= '0';
-            busy_r         <= '0';
+        -- address_head_r <= (others => '0');
+        -- data_r         <= (others => '0');
+        -- o_data_r       <= (others => '0');
+        -- stp_r          <= '0';
+        -- busy_r         <= '0';
         elsif (rising_edge(clk)) then
 
             case fsm_ulpi_transmit_state is
@@ -77,7 +77,17 @@ begin
                 when wait_dir_state =>
 
                     if (i_ulpi.dir = '0') then
-                        fsm_ulpi_transmit_state <= cmd_write_state;
+                        -- fsm_ulpi_transmit_state <= cmd_write_state;
+
+                        if (i_ulpi.nxt = '1') then
+                            if (i_transmit_end = '1') then
+                                fsm_ulpi_transmit_state <= stp_state;
+                            else
+                                fsm_ulpi_transmit_state <= write_reg_state;
+                            end if;
+                        else
+                            fsm_ulpi_transmit_state <= cmd_write_state;
+                        end if;
                     else
                         fsm_ulpi_transmit_state <= wait_dir_state;
                     end if;
@@ -85,7 +95,11 @@ begin
                 when cmd_write_state =>
 
                     if (i_ulpi.nxt = '1') then
-                        fsm_ulpi_transmit_state <= write_reg_state;
+                        if (i_transmit_end = '1') then
+                            fsm_ulpi_transmit_state <= stp_state;
+                        else
+                            fsm_ulpi_transmit_state <= write_reg_state;
+                        end if;
                     else
                         fsm_ulpi_transmit_state <= cmd_write_state;
                     end if;
@@ -108,34 +122,71 @@ begin
 
     end process;
 
-    process (fsm_ulpi_transmit_state) is
+    process (enable, clk, reset) is
     begin
 
-        case fsm_ulpi_transmit_state is
+        if (reset = '1') then
+            -- fsm_ulpi_transmit_state <= idle_state;
 
-            when idle_state =>
+            -- address_head_r <= (others => '0');
+            -- data_r         <= (others => '0');
+            -- o_data_r       <= (others => '0');
+            -- stp_r          <= '0';
+            -- busy_r         <= '0';
+            o_data_r <= ULPI_CMD_IDLE;
+            stp_r    <= '0';
+            busy_r   <= '0';
+        elsif (rising_edge(clk)) then
 
-                o_data_r <= ULPI_CMD_IDLE;
-                stp_r    <= '0';
-                busy_r   <= '0';
+            case fsm_ulpi_transmit_state is
 
-            when wait_dir_state =>
+                when idle_state =>
 
-                busy_r <= '1';
+                    o_data_r <= ULPI_CMD_IDLE;
+                    stp_r    <= '0';
 
-            when cmd_write_state =>
+                    if (i_transmit_request = '1') then
+                        busy_r <= '1';
+                    else
+                        busy_r <= '0';
+                    end if;
 
-                o_data_r <= ULPI_CMD_HEAD_TRANSMIT & b"00" & i_transmit_pid;
+                when wait_dir_state =>
 
-            when write_reg_state =>
+                    if (i_ulpi.dir = '0') then
+                        o_data_r <= ULPI_CMD_HEAD_TRANSMIT & b"00" & i_transmit_pid;
+                    end if;
 
-                o_data_r <= i_transmit_data;
+                when cmd_write_state =>
 
-            when stp_state =>
+                    o_data_r <= ULPI_CMD_HEAD_TRANSMIT & b"00" & i_transmit_pid;
 
-                stp_r <= '1';
+                    -- if (i_ulpi.nxt = '1' and i_transmit_end = '1') then
+                    --     stp_r    <= '1';
+                    --     o_data_r <= ULPI_CMD_IDLE;
+                    -- else
+                    --     o_data_r <= ULPI_CMD_HEAD_TRANSMIT & b"00" & i_transmit_pid;
+                    -- end if;
 
-        end case;
+                when write_reg_state =>
+
+                    o_data_r <= i_transmit_data;
+
+                    -- if (i_ulpi.nxt = '1' and i_transmit_end = '1') then
+                    --     stp_r    <= '1';
+                    --     o_data_r <= ULPI_CMD_IDLE;
+                    -- else
+                    --     o_data_r <= i_transmit_data;
+                    -- end if;
+
+                when stp_state =>
+
+                    o_data_r <= ULPI_CMD_IDLE;
+                    stp_r    <= '1';
+
+            end case;
+
+        end if;
 
     end process;
 

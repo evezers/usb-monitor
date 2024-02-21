@@ -6,10 +6,10 @@ library ieee;
 package usb_pkg is
 
     type t_usb_request is record
-        bmRequestType : unsigned(63 downto 55);
-        bRequest      : unsigned(54 downto 46);
-        wValue        : unsigned(45 downto 29);
-        wIndex        : unsigned(28 downto 16);
+        bmRequestType : unsigned(63 downto 56);
+        bRequest      : unsigned(55 downto 48);
+        wValue        : unsigned(47 downto 32);
+        wIndex        : unsigned(31 downto 16);
         wLength       : unsigned(15 downto 0);
     end record t_usb_request;
 
@@ -29,15 +29,19 @@ package usb_pkg is
     constant USB_PID_ACK : std_logic_vector(3 downto 0) := b"0010";
     constant USB_PID_NAK : std_logic_vector(3 downto 0) := b"1010";
 
-    constant USB_REQUEST_SET_ADDRESS    : natural := 5;
-    constant USB_REQUEST_GET_DESCRIPTOR : natural := 6;
+    constant USB_REQUEST_SET_ADDRESS       : natural := 5;
+    constant USB_REQUEST_GET_DESCRIPTOR    : natural := 6;
+    constant USB_REQUEST_SET_CONFIGURATION : natural := 9;
 
     constant USB_CRC16_LENGTH    : natural := 2;
     constant USB_MAX_PACKET_SIZE : natural := 8;
 
     constant USB_DESCRIPTOR_SIZE          : natural := 18;
     constant USB_DESCRIPTOR_PACKETS_COUNT : natural := USB_DESCRIPTOR_SIZE / USB_MAX_PACKET_SIZE + 1;
--- constant USB_DESCRIPTOR_PACKETS_COUNT : natural := natural(ceil(real(USB_DESCRIPTOR_SIZE) /
---                                                                 real(USB_MAX_PACKET_SIZE)));
+    -- constant USB_DESCRIPTOR_PACKETS_COUNT : natural := natural(ceil(real(USB_DESCRIPTOR_SIZE) /
+    --                                                                 real(USB_MAX_PACKET_SIZE)));
+
+    constant USB_CONFIGURATION_SIZE : natural := 9;
+    constant USB_ENDPOINT_SIZE      : natural := 7;
 
 end package usb_pkg;
